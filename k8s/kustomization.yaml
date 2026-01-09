@@ -1,0 +1,58 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: cloudlab-apps
+
+resources:
+  # Base resources
+  - base/namespace.yaml
+  - base/configmaps/nginx-config.yaml
+  - base/configmaps/prometheus-config.yaml
+  - base/secrets/ssl-certs.yaml
+
+  # Applications
+  - apps/nodejs-app/deployment.yaml
+  - apps/nodejs-app/service.yaml
+  - apps/nodejs-app/hpa.yaml
+  - apps/python-app/deployment.yaml
+  - apps/python-app/service.yaml
+  - apps/python-app/hpa.yaml
+
+  # Monitoring
+  - monitoring/prometheus/statefulset.yaml
+  - monitoring/prometheus/service.yaml
+  - monitoring/grafana/deployment.yaml
+  - monitoring/grafana/service.yaml
+  - monitoring/grafana/pvc.yaml
+  - monitoring/grafana/datasources.yaml
+  - monitoring/grafana/dashboards-config.yaml
+  - monitoring/grafana/dashboards.yaml
+
+  # Ingress
+  - ingress/ingress.yaml
+  # - ingress/cert-manager.yaml  # Uncomment jika cert-manager sudah installed
+
+# Common labels untuk semua resources
+commonLabels:
+  app.kubernetes.io/name: cloudlab
+  app.kubernetes.io/managed-by: kustomize
+
+# Images - update dengan registry dan tag yang sesuai
+images:
+  - name: cloudlab-nodejs-app
+    newName: cloudlab-nodejs-app
+    newTag: latest
+  - name: cloudlab-python-app
+    newName: cloudlab-python-app
+    newTag: latest
+# ConfigMap generator (opsional)
+# configMapGenerator:
+# - name: app-config
+#   literals:
+#   - ENV=production
+
+# Secret generator (opsional)
+# secretGenerator:
+# - name: app-secrets
+#   literals:
+#   - API_KEY=your-api-key
