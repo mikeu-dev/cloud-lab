@@ -163,7 +163,12 @@ Setiap aplikasi expose metrics di endpoint `/metrics`:
 1. Login ke Grafana: http://localhost:3000
 2. Credentials: `admin` / `admin123`
 3. Prometheus datasource sudah auto-configured
-4. Import dashboard atau buat custom dashboard
+4. Dashboards yang tersedia:
+   - **CloudLab Overview** - Monitoring semua services (request rate, response time, error rate, CPU, memory, status)
+   - **Node.js Application** - Metrics khusus Node.js (event loop lag, heap memory)
+   - **Python API** - Metrics khusus Flask API (endpoint performance, resource usage)
+
+Dashboards akan otomatis ter-load saat Grafana start.
 
 ### Alert Rules
 
