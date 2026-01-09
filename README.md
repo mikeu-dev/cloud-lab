@@ -131,10 +131,13 @@ cloud-lab/
 2. Tambahkan service di `docker-compose.yml`
 3. Konfigurasi reverse proxy di `nginx/nginx.conf`
 4. Tambahkan scrape config di `monitoring/prometheus.yml`
-5. Rebuild dan restart:
+5. **Tambahkan ke CI/CD pipeline** di `ci/github-actions.yml` (matrix strategy)
+6. Rebuild dan restart:
    ```bash
    docker-compose up -d --build
    ```
+
+> **💡 Tip:** Dengan matrix strategy di CI/CD, menambah aplikasi baru ke pipeline sangat mudah - cukup tambah 1 entry di matrix tanpa duplikasi kode. Lihat [`ci/README.md`](ci/README.md) untuk detail.
 
 ### Melihat Logs
 
@@ -222,12 +225,47 @@ curl http://localhost:9090/api/v1/targets
 
 ### Automated Testing (CI/CD)
 
-GitHub Actions workflow akan otomatis:
-1. Validate Docker Compose dan Nginx config
-2. Build Docker images
-3. Run health checks
-4. Security scanning dengan Trivy
-5. Integration tests
+Pipeline CI/CD menggunakan **GitHub Actions** dengan **matrix strategy** untuk scalability:
+
+**Pipeline Stages:**
+1. **Validate** - Validasi Docker Compose dan Nginx config
+2. **Build Apps** - Build semua aplikasi secara parallel menggunakan matrix
+3. **Security Scan** - Vulnerability scanning dengan Trivy
+4. **Integration Tests** - Test lengkap semua services
+
+**Matrix Strategy untuk Build:**
+```yaml
+strategy:
+  matrix:
+    app:
+      - name: nodejs-app
+        context: ./apps/demo-apps/nodejs-app
+        port: 3001
+      - name: python-app
+        context: ./apps/demo-apps/python-app
+        port: 5000
+```
+
+**Keuntungan:**
+- ✅ **Scalable** - Mudah menambah aplikasi baru
+- ✅ **Parallel** - Semua apps di-build bersamaan
+- ✅ **DRY** - Tidak ada duplikasi kode
+- ✅ **Maintainable** - Satu template untuk semua apps
+
+**Menambah Aplikasi ke CI/CD:**
+
+Cukup tambahkan entry baru di matrix di file `ci/github-actions.yml`:
+```yaml
+- name: golang-app
+  image: cloudlab-golang-app
+  context: ./apps/demo-apps/golang-app
+  port: 8080
+  health_endpoint: /health
+  metrics_endpoint: /metrics
+  sleep_time: 5
+```
+
+Lihat dokumentasi lengkap di [`ci/README.md`](ci/README.md)
 
 ## 🚢 Deployment
 
