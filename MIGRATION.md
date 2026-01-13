@@ -7,13 +7,13 @@ Panduan migrasi CloudLab dari Docker Compose ke Kubernetes.
 | Aspek | Docker Compose | Kubernetes |
 |--------|---------------|------------|
 | **Orkestrasi** | Single host | Multi-node cluster |
-| **Penskalaan (Scaling)** | Manual (`docker-compose scale`) | Otomatis (HPA) |
+| **Penskalaan (Scaling)** | Manual (`docker compose scale`) | Otomatis (HPA) |
 | **Ketersediaan Tinggi** | Terbatas | Built-in (replika, pemulihan mandiri) |
 | **Load Balancing** | Dasar | Lanjutan (Services, Ingress) |
 | **Penyimpanan** | Docker volumes | PersistentVolumes |
 | **Jaringan** | Bridge network | Service mesh, Network Policies |
 | **Konfigurasi** | Environment variables | ConfigMaps, Secrets |
-| **Deployment** | `docker-compose up` | `kubectl apply` |
+| **Deployment** | `docker compose up` | `kubectl apply` |
 | **Monitoring** | Setup manual | Integrasi native |
 
 ## Pemetaan Komponen
@@ -119,13 +119,13 @@ depends_on:
 1.  **Audit Setup Saat Ini**
     ```bash
     # List running services
-    docker-compose ps
+    docker compose ps
     
     # Cek penggunaan resource
     docker stats
     
     # Ekspor konfigurasi
-    docker-compose config > docker-compose-backup.yml
+    docker compose config > docker-compose-backup.yml
     ```
 
 2.  **Build dan Tag Images**
@@ -296,10 +296,10 @@ depends_on:
 2.  **Hentikan Docker Compose**
     ```bash
     # Hentikan services
-    docker-compose down
+    docker compose down
     
     # Simpan volumes untuk backup
-    # docker-compose down -v  # Hanya jika ingin menghapus volumes
+    # docker compose down -v  # Hanya jika ingin menghapus volumes
     ```
 
 3.  **Verifikasi Trafik Produksi**
@@ -318,10 +318,10 @@ Jika terjadi masalah, rollback kembali ke Docker Compose:
 kubectl delete -k k8s/
 
 # 2. Jalankan Docker Compose
-docker-compose up -d
+docker compose up -d
 
 # 3. Verifikasi services
-docker-compose ps
+docker compose ps
 ```
 
 ## Masalah Umum (Common Issues)

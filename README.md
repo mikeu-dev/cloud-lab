@@ -63,12 +63,12 @@ CloudLab dapat di-deploy dengan dua metode:
 
 3. **Jalankan semua layanan**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 4. **Verifikasi layanan berjalan**
    ```bash
-   docker-compose ps
+   docker compose ps
    ```
 
 ## Endpoint Layanan
@@ -291,14 +291,14 @@ cloud-lab/
 
 ```bash
 # Semua services
-docker-compose logs -f
+docker compose logs -f
 
 # Service tertentu
-docker-compose logs -f nodejs-app
-docker-compose logs -f python-app
-docker-compose logs -f nginx
-docker-compose logs -f prometheus
-docker-compose logs -f grafana
+docker compose logs -f nodejs-app
+docker compose logs -f python-app
+docker compose logs -f nginx
+docker compose logs -f prometheus
+docker compose logs -f grafana
 ```
 
 ## Operasi (Kubernetes)
@@ -329,7 +329,7 @@ kubectl get hpa -n cloudlab-apps
 
 ```bash
 # Docker Compose
-docker-compose down
+docker compose down
 
 # Kubernetes
 ./k8s/scripts/cleanup.sh
@@ -345,7 +345,7 @@ kubectl delete -k k8s/
 3. Konfigurasi reverse proxy di `nginx/nginx.conf`
 4. Tambahkan scrape config di `monitoring/prometheus.yml`
 5. Tambahkan ke CI/CD pipeline di `ci/github-actions.yml` (matrix strategy)
-6. Rebuild: `docker-compose up -d --build`
+6. Rebuild: `docker compose up -d --build`
 
 **Kubernetes:**
 1. Buat direktori di `k8s/apps/<app-name>/`
@@ -359,14 +359,14 @@ kubectl delete -k k8s/
 
 ```bash
 # Semua services
-docker-compose logs -f
+docker compose logs -f
 
 # Service tertentu
-docker-compose logs -f nodejs-app
-docker-compose logs -f python-app
-docker-compose logs -f nginx
-docker-compose logs -f prometheus
-docker-compose logs -f grafana
+docker compose logs -f nodejs-app
+docker compose logs -f python-app
+docker compose logs -f nginx
+docker compose logs -f prometheus
+docker compose logs -f grafana
 ```
 
 ## Monitoring
@@ -488,7 +488,7 @@ Lihat dokumentasi lengkap di [`ci/README.md`](ci/README.md)
 ### Pengembangan
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Produksi
@@ -498,7 +498,7 @@ docker-compose up -d
 3. Update password admin Grafana
 4. Deploy dengan:
    ```bash
-   docker-compose -f docker-compose.yml up -d
+   docker compose -f docker-compose.yml up -d
    ```
 
 ## Pemecahan Masalah (Troubleshooting)
@@ -519,10 +519,10 @@ sudo lsof -i :9090
 
 ```bash
 # Cek logs
-docker-compose logs <service-name>
+docker compose logs <service-name>
 
 # Rebuild container
-docker-compose up -d --build --force-recreate <service-name>
+docker compose up -d --build --force-recreate <service-name>
 ```
 
 ### Error Sertifikat SSL
@@ -544,7 +544,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 
 ### Grafana tidak bisa terhubung ke Prometheus
 
-1. Cek Prometheus berjalan: `docker-compose ps prometheus`
+1. Cek Prometheus berjalan: `docker compose ps prometheus`
 2. Verifikasi config datasource di `monitoring/grafana/datasources.yml`
 3. Test koneksi dari Grafana UI: Configuration → Data Sources
 
@@ -564,20 +564,20 @@ docker cp cloudlab-prometheus:/prometheus ./backup/prometheus
 
 ```bash
 # Pull images terbaru
-docker-compose pull
+docker compose pull
 
 # Recreate containers
-docker-compose up -d --force-recreate
+docker compose up -d --force-recreate
 ```
 
 ### Pembersihan
 
 ```bash
 # Hentikan semua layanan
-docker-compose down
+docker compose down
 
 # Hapus volumes (PERINGATAN: akan menghapus data)
-docker-compose down -v
+docker compose down -v
 
 # Hapus images yang tidak digunakan
 docker image prune -a
