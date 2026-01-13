@@ -157,6 +157,10 @@ jobs:
           sleep 30
           docker compose ps
 
+      - name: Show container logs for debugging
+        if: always()
+        run: docker compose logs
+
       - name: Test Nginx reverse proxy
         run: |
           curl -k -f https://localhost/health || exit 1
