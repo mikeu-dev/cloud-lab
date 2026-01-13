@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: cloudlab-monitoring
+data:
+  # NOTE: Dashboard JSON files dari monitoring/grafana/dashboards/
+  # dapat di-copy ke sini atau di-mount dari external ConfigMap
+  # Untuk simplicity, user dapat import dashboards secara manual
+  # atau menggunakan Grafana sidecar untuk auto-load dari ConfigMaps
+  cloudlab-overview.json: |
+    {
+      "dashboard": {
+        "title": "CloudLab Overview",
+        "tags": ["cloudlab"],
+        "timezone": "browser",
+        "panels": [],
+        "schemaVersion": 16,
+        "version": 0
+      }
+    }

@@ -76,11 +76,11 @@ jobs:
           docker stop test-${{ matrix.app.name }}
           docker rm test-${{ matrix.app.name }}
 
-  # Security scanning
+  # Security scanning - Runs in parallel
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
-    needs: build-apps
+    needs: validate # Only needs code checkout/validation
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -101,11 +101,28 @@ jobs:
           format: "sarif"
           output: "trivy-python-results.sarif"
 
+  # Validate Kubernetes Manifests
+  lint-k8s:
+    name: Lint Kubernetes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install kubeconform
+        run: |
+          wget https://github.com/yannh/kubeconform/releases/download/v0.6.3/kubeconform-linux-amd64.tar.gz
+          tar xf kubeconform-linux-amd64.tar.gz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Validate Manifests
+        run: kubeconform -summary -output text k8s/
+
   # Integration test
   integration-test:
     name: Integration Tests
     runs-on: ubuntu-latest
-    needs: build-apps
+    needs: [build-apps, security-scan, lint-k8s]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
