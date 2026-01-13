@@ -1,0 +1,26 @@
+name: GitOps Sync Simulation
+
+on:
+    push:
+        paths:
+            - "k8s/**"
+        branches:
+            - main
+
+jobs:
+    sync-check:
+        name: Simulate GitOps Sync
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Minikube (Simulation)
+              uses: medyagh/setup-minikube@master
+
+            - name: Calculate Diff
+              run: |
+                  echo "Simulating ArgoCD/Flux sync..."
+                  echo "Comparing git state vs cluster state..."
+                  kubectl diff -f k8s/ || true
+                  echo "Changes detected above would be applied automatically in a real GitOps setup."
