@@ -1,18 +1,18 @@
-# CI/CD Pipeline Documentation
+# Dokumentasi Pipeline CI/CD
 
-## Overview
+## Ikhtisar
 
 Pipeline CI/CD CloudLab menggunakan GitHub Actions untuk otomasi build, test, dan deployment aplikasi.
 
 ## Struktur Pipeline
 
-### 1. Validate
+### 1. Validate (Validasi)
 Memvalidasi konfigurasi sebelum build:
-- Docker Compose configuration
-- Nginx configuration
+- Konfigurasi Docker Compose
+- Konfigurasi Nginx
 
-### 2. Build Apps (Matrix Strategy)
-Build semua aplikasi menggunakan **matrix strategy** untuk scalability:
+### 2. Build Apps (Strategi Matriks)
+Build semua aplikasi menggunakan **strategi matriks** untuk skalabilitas:
 
 ```yaml
 strategy:
@@ -35,30 +35,30 @@ strategy:
   fail-fast: false
 ```
 
-**Keuntungan Matrix Strategy:**
-- ✅ **Scalable**: Mudah menambah aplikasi baru
-- ✅ **DRY**: Tidak ada duplikasi kode
-- ✅ **Parallel**: Semua apps di-build secara parallel
-- ✅ **Maintainable**: Satu template untuk semua apps
+**Keuntungan Strategi Matriks:**
+- **Scalable**: Mudah menambah aplikasi baru
+- **DRY (Don't Repeat Yourself)**: Tidak ada duplikasi kode
+- **Parallel**: Semua aplikasi di-build secara paralel
+- **Maintainable**: Satu template untuk semua aplikasi
 
-### 3. Security Scan
-Scan vulnerabilities menggunakan Trivy untuk semua aplikasi.
+### 3. Security Scan (Pemindaian Keamanan)
+Scan kerentanan menggunakan Trivy untuk semua aplikasi.
 
-### 4. Integration Test
-Test integrasi lengkap:
+### 4. Integration Test (Uji Integrasi)
+Uji integrasi lengkap meliputi:
 - Nginx reverse proxy
-- Node.js app melalui Nginx
+- Aplikasi Node.js melalui Nginx
 - Python API melalui Nginx
-- Prometheus metrics
+- Metrics Prometheus
 - Grafana dashboard
-- Prometheus targets
+- Target Prometheus
 
-### 5. Deploy (Optional)
-Deployment ke production (saat ini di-comment, uncomment saat siap deploy).
+### 5. Deploy (Opsional)
+Deployment ke produksi (saat ini dinonaktifkan, aktifkan saat siap deploy).
 
 ## Menambah Aplikasi Baru
 
-Untuk menambah aplikasi baru, cukup tambahkan entry di matrix `build-apps`:
+Untuk menambah aplikasi baru, cukup tambahkan entri di matriks `build-apps`:
 
 ```yaml
 build-apps:
@@ -80,13 +80,13 @@ build-apps:
 ```
 
 **Tidak perlu:**
-- ❌ Duplikasi job baru
-- ❌ Copy-paste steps
-- ❌ Update multiple places
+- Duplikasi job baru
+- Copy-paste langkah-langkah
+- Update di banyak tempat
 
 **Cukup:**
-- ✅ Tambah 1 entry di matrix
-- ✅ Semua steps otomatis apply
+- Tambah 1 entri di matriks
+- Semua langkah otomatis diterapkan
 
 ## Workflow Triggers
 
@@ -94,7 +94,7 @@ Pipeline berjalan otomatis pada:
 - Push ke branch `main` atau `develop`
 - Pull request ke branch `main`
 
-## Environment Variables
+## Variabel Lingkungan (Environment Variables)
 
 ```yaml
 env:
@@ -103,36 +103,36 @@ env:
   PYTHON_APP_IMAGE: cloudlab-python-app
 ```
 
-## Cache Strategy
+## Strategi Cache
 
-Setiap aplikasi memiliki cache scope terpisah untuk optimasi build time:
+Setiap aplikasi memiliki cakupan cache terpisah untuk optimasi waktu build:
 
 ```yaml
 cache-from: type=gha,scope=${{ matrix.app.name }}
 cache-to: type=gha,mode=max,scope=${{ matrix.app.name }}
 ```
 
-## Testing Strategy
+## Strategi Pengujian
 
-Setiap aplikasi di-test dengan:
-1. Health check endpoint
-2. Metrics endpoint
-3. Integration test melalui Nginx
+Setiap aplikasi diuji dengan:
+1. Endpoint pemeriksaan kesehatan (Health check)
+2. Endpoint metrics
+3. Uji integrasi melalui Nginx
 
-## Best Practices
+## Praktik Terbaik (Best Practices)
 
-1. **Fail-fast: false** - Lanjutkan build apps lain meskipun satu gagal
+1. **Fail-fast: false** - Lanjutkan build aplikasi lain meskipun satu gagal
 2. **Scoped cache** - Cache terpisah per aplikasi untuk efisiensi
-3. **Dynamic naming** - Gunakan `${{ matrix.app.name }}` untuk naming
-4. **Consistent structure** - Semua apps harus punya health & metrics endpoint
+3. **Penamaan Dinamis** - Gunakan `${{ matrix.app.name }}` untuk penamaan
+4. **Struktur Konsisten** - Semua aplikasi harus memiliki endpoint health & metrics
 
-## Troubleshooting
+## Pemecahan Masalah (Troubleshooting)
 
 ### Build gagal untuk satu app
-Karena `fail-fast: false`, apps lain tetap di-build. Check logs untuk app yang gagal.
+Karena `fail-fast: false`, aplikasi lain tetap di-build. Periksa logs untuk aplikasi yang gagal.
 
-### Cache issues
-Hapus cache dengan re-run workflow atau clear GitHub Actions cache.
+### Masalah Cache
+Hapus cache dengan menjalankan ulang workflow atau membersihkan cache GitHub Actions.
 
-### Integration test timeout
-Sesuaikan `sleep_time` di matrix config jika aplikasi butuh waktu startup lebih lama.
+### Timeout pada Uji Integrasi
+Sesuaikan `sleep_time` di konfigurasi matriks jika aplikasi membutuhkan waktu startup lebih lama.

@@ -1,8 +1,8 @@
 # CloudLab Environment
 
-Comprehensive cloud laboratory environment dengan Docker containerization, reverse proxy, monitoring stack, dan CI/CD pipeline.
+Lingkungan laboratorium cloud komprehensif dengan kontainerisasi Docker, reverse proxy, monitoring stack, dan pipeline CI/CD.
 
-## 🏗️ Arsitektur
+## Arsitektur
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -32,27 +32,27 @@ Comprehensive cloud laboratory environment dengan Docker containerization, rever
          └─────────────┘
 ```
 
-## 🚀 Quick Start
+## Panduan Memulai Cepat (Quick Start)
 
-CloudLab dapat di-deploy dengan dua cara:
+CloudLab dapat di-deploy dengan dua metode:
 
-### Option 1: Docker Compose (Recommended untuk Development)
+### Opsi 1: Docker Compose (Disarankan untuk Pengembangan)
 
-#### Prerequisites
+#### Prasyarat
 
 - Docker Engine 20.10+
 - Docker Compose 2.0+
 - Git
 
-#### Installation
+#### Instalasi
 
-1. **Clone repository**
+1. **Clone repositori**
    ```bash
    git clone <repository-url>
    cd cloud-lab
    ```
 
-2. **Generate SSL certificates** (sudah otomatis dibuat)
+2. **Generate sertifikat SSL** (sudah otomatis dibuat)
    ```bash
    # Jika perlu regenerate:
    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
@@ -61,19 +61,19 @@ CloudLab dapat di-deploy dengan dua cara:
      -subj "/C=ID/ST=Jakarta/L=Jakarta/O=CloudLab/OU=Dev/CN=localhost"
    ```
 
-3. **Start semua services**
+3. **Jalankan semua layanan**
    ```bash
    docker-compose up -d
    ```
 
-4. **Verify services running**
+4. **Verifikasi layanan berjalan**
    ```bash
    docker-compose ps
    ```
 
-## 📊 Service Endpoints
+## Endpoint Layanan
 
-| Service | URL | Credentials |
+| Layanan | URL | Kredensial |
 |---------|-----|-------------|
 | **Node.js App** | https://localhost/ | - |
 | **Python API** | https://localhost/api | - |
@@ -81,7 +81,7 @@ CloudLab dapat di-deploy dengan dua cara:
 | **Prometheus** | http://localhost:9090 | - |
 | **Nginx Status** | https://localhost/nginx_status | Internal only |
 
-### Health Checks
+### Pemeriksaan Kesehatan (Health Checks)
 
 ```bash
 # Node.js App
@@ -97,39 +97,39 @@ curl http://localhost:9090/-/healthy
 curl http://localhost:3000/api/health
 ```
 
-### Option 2: Kubernetes (Recommended untuk Production)
+### Opsi 2: Kubernetes (Disarankan untuk Produksi)
 
-#### Prerequisites
+#### Prasyarat
 
 - kubectl v1.28+
 - Kubernetes cluster (Minikube/Kind/GKE/EKS/AKS)
 - Docker Engine 20.10+
 - Git
 
-#### Quick Deploy
+#### Deployment Cepat
 
 ```bash
-# 1. Clone repository
+# 1. Clone repositori
 git clone <repository-url>
 cd cloud-lab
 
-# 2. Run deployment script
+# 2. Jalankan skrip deployment
 ./k8s/scripts/deploy.sh
 
-# 3. Access applications via port-forward
+# 3. Akses aplikasi via port-forward
 kubectl port-forward svc/nodejs-app 3001:3001 -n cloudlab-apps
 kubectl port-forward svc/grafana 3000:3000 -n cloudlab-monitoring
 ```
 
-**� Dokumentasi Lengkap:**
-- [Kubernetes Deployment Guide](k8s/README.md) - Setup dan deployment detail
-- [Migration Guide](MIGRATION.md) - Migrasi dari Docker Compose ke Kubernetes
+**Dokumentasi Lengkap:**
+- [Panduan Deployment Kubernetes](k8s/README.md) - Setup dan deployment detail
+- [Panduan Migrasi](MIGRATION.md) - Migrasi dari Docker Compose ke Kubernetes
 
-## 📊 Service Endpoints
+## Endpoint Layanan
 
 ### Docker Compose
 
-| Service | URL | Credentials |
+| Layanan | URL | Kredensial |
 |---------|-----|-------------|
 | **Node.js App** | https://localhost/ | - |
 | **Python API** | https://localhost/api | - |
@@ -139,14 +139,14 @@ kubectl port-forward svc/grafana 3000:3000 -n cloudlab-monitoring
 
 ### Kubernetes (via Port Forward)
 
-| Service | Command | URL |
+| Layanan | Perintah | URL |
 |---------|---------|-----|
 | **Node.js App** | `kubectl port-forward svc/nodejs-app 3001:3001 -n cloudlab-apps` | http://localhost:3001 |
 | **Python API** | `kubectl port-forward svc/python-app 5000:5000 -n cloudlab-apps` | http://localhost:5000 |
 | **Grafana** | `kubectl port-forward svc/grafana 3000:3000 -n cloudlab-monitoring` | http://localhost:3000 |
 | **Prometheus** | `kubectl port-forward svc/prometheus 9090:9090 -n cloudlab-monitoring` | http://localhost:9090 |
 
-### Health Checks (Docker Compose)
+### Pemeriksaan Kesehatan (Docker Compose)
 
 ```bash
 # Node.js App
@@ -162,10 +162,10 @@ curl http://localhost:9090/-/healthy
 curl http://localhost:3000/api/health
 ```
 
-### Health Checks (Kubernetes)
+### Pemeriksaan Kesehatan (Kubernetes)
 
 ```bash
-# Check pod status
+# Cek status pod
 kubectl get pods -n cloudlab-apps
 kubectl get pods -n cloudlab-monitoring
 
@@ -177,107 +177,107 @@ kubectl port-forward svc/python-app 5000:5000 -n cloudlab-apps &
 curl http://localhost:5000/health
 ```
 
-## 🎯 Deployment Comparison
+## Perbandingan Deployment
 
-| Feature | Docker Compose | Kubernetes |
+| Fitur | Docker Compose | Kubernetes |
 |---------|---------------|------------|
-| **Setup Complexity** | ⭐ Simple | ⭐⭐⭐ Advanced |
-| **Scalability** | Manual | Auto (HPA) |
-| **High Availability** | Limited | Built-in |
-| **Production Ready** | Development | Production |
-| **Resource Usage** | ~2GB RAM | ~4GB RAM |
-| **Learning Curve** | Easy | Moderate |
+| **Kompleksitas Setup** | Sederhana | Lanjutan |
+| **Skalabilitas** | Manual | Otomatis (HPA) |
+| **Ketersediaan Tinggi** | Terbatas | Built-in |
+| **Kesiapan Produksi** | Pengembangan | Produksi |
+| **Penggunaan Sumber Daya** | ~2GB RAM | ~4GB RAM |
+| **Kurva Pembelajaran** | Mudah | Menengah |
 
 **Rekomendasi:**
-- 🔧 **Development**: Gunakan Docker Compose untuk development lokal yang cepat
-- 🚀 **Production**: Gunakan Kubernetes untuk production deployment dengan HA dan auto-scaling
+- **Pengembangan**: Gunakan Docker Compose untuk pengembangan lokal yang cepat
+- **Produksi**: Gunakan Kubernetes untuk deployment produksi dengan HA dan auto-scaling
 
-## 🔧 Development (Docker Compose)
+## Pengembangan (Docker Compose)
 
 ### Struktur Direktori
 
-> **💡 Catatan Penting:** Folder `apps/` dan `k8s/apps/` adalah **BERBEDA** dan **TIDAK duplikasi**!
-> - `apps/` = Source code aplikasi (untuk build Docker images)
-> - `k8s/apps/` = Kubernetes deployment configs (untuk deploy ke cluster)
+> **Catatan Penting:** Direktori `apps/` dan `k8s/apps/` adalah **BERBEDA** dan **TIDAK duplikasi**!
+> - `apps/` = Kode sumber aplikasi (untuk build Docker images)
+> - `k8s/apps/` = Konfigurasi deployment Kubernetes (untuk deploy ke cluster)
 
 ```
 cloud-lab/
-├── apps/                                # 📦 APPLICATION SOURCE CODE
+├── apps/                                # APPLICATION SOURCE CODE
 │   └── demo-apps/                       # (Digunakan untuk build Docker images)
 │       ├── nodejs-app/                  # Node.js Express application
-│       │   ├── Dockerfile               # ← Build instructions
-│       │   ├── package.json             # ← Dependencies
-│       │   └── server.js                # ← Application code
+│       │   ├── Dockerfile               # ← Instruksi build
+│       │   ├── package.json             # ← Dependensi
+│       │   └── server.js                # ← Kode aplikasi
 │       └── python-app/                  # Python Flask API
-│           ├── Dockerfile               # ← Build instructions
-│           ├── requirements.txt         # ← Dependencies
-│           └── app.py                   # ← Application code
+│           ├── Dockerfile               # ← Instruksi build
+│           ├── requirements.txt         # ← Dependensi
+│           └── app.py                   # ← Kode aplikasi
 │
-├── ci/                                  # 🔄 CI/CD PIPELINE
+├── ci/                                  # CI/CD PIPELINE
 │   ├── github-actions.yml               # GitHub Actions workflow
-│   └── README.md                        # CI/CD documentation
+│   └── README.md                        # Dokumentasi CI/CD
 │
-├── monitoring/                          # 📊 MONITORING (Docker Compose)
+├── monitoring/                          # MONITORING (Docker Compose)
 │   ├── prometheus.yml                   # Prometheus config
-│   ├── alerts.yml                       # Alert rules
+│   ├── alerts.yml                       # Aturan alert
 │   └── grafana/
 │       ├── datasources.yml              # Grafana datasources
 │       ├── dashboards.yml               # Dashboard provisioning
 │       └── dashboards/                  # Dashboard JSON files
 │
-├── nginx/                               # 🌐 REVERSE PROXY (Docker Compose)
+├── nginx/                               # REVERSE PROXY (Docker Compose)
 │   ├── nginx.conf                       # Main Nginx config
-│   ├── ssl/                             # SSL certificates
-│   └── conf.d/                          # Additional configs
+│   ├── ssl/                             # Sertifikat SSL
+│   └── conf.d/                          # Konfigurasi tambahan
 │
-├── k8s/                                 # ☸️ KUBERNETES MANIFESTS
-│   │                                    # (Deployment configurations, BUKAN source code)
-│   ├── README.md                        # Kubernetes deployment guide
+├── k8s/                                 # KUBERNETES MANIFESTS
+│   │                                    # (Konfigurasi deployment, BUKAN source code)
+│   ├── README.md                        # Panduan deployment Kubernetes
 │   ├── kustomization.yaml               # Kustomize config
-│   ├── base/                            # Base configurations
+│   ├── base/                            # Konfigurasi dasar
 │   │   ├── namespace.yaml               # Namespaces
 │   │   ├── configmaps/                  # ConfigMaps (Nginx, Prometheus)
 │   │   └── secrets/                     # Secrets (SSL, credentials)
-│   ├── apps/                            # 🚀 APPLICATION DEPLOYMENTS
+│   ├── apps/                            # APPLICATION DEPLOYMENTS
 │   │   ├── nodejs-app/                  # (YAML configs, bukan source code!)
-│   │   │   ├── deployment.yaml          # ← How to deploy
-│   │   │   ├── service.yaml             # ← How to expose
-│   │   │   └── hpa.yaml                 # ← How to scale
+│   │   │   ├── deployment.yaml          # ← Cara deploy
+│   │   │   ├── service.yaml             # ← Cara expose
+│   │   │   └── hpa.yaml                 # ← Cara scale
 │   │   └── python-app/
 │   │       ├── deployment.yaml
 │   │       ├── service.yaml
 │   │       └── hpa.yaml
-│   ├── monitoring/                      # Monitoring stack for K8s
+│   ├── monitoring/                      # Monitoring stack untuk K8s
 │   │   ├── prometheus/                  # Prometheus StatefulSet
 │   │   └── grafana/                     # Grafana Deployment
-│   ├── ingress/                         # Ingress configs
-│   │   ├── ingress.yaml                 # Routing rules
-│   │   └── cert-manager.yaml            # SSL automation
-│   └── scripts/                         # Helper scripts
-│       ├── deploy.sh                    # Automated deployment
-│       └── cleanup.sh                   # Cleanup script
+│   ├── ingress/                         # Konfigurasi Ingress
+│   │   ├── ingress.yaml                 # Aturan routing
+│   │   └── cert-manager.yaml            # Otomasi SSL
+│   └── scripts/                         # Skrip pembantu
+│       ├── deploy.sh                    # Deployment otomatis
+│       └── cleanup.sh                   # Skrip pembersihan
 │
-├── scripts/                             # 🛠️ UTILITY SCRIPTS (Docker Compose)
+├── scripts/                             # UTILITY SCRIPTS (Docker Compose)
 │   ├── setup.sh
 │   └── cleanup.sh
 │
-├── docker-compose.yml                   # 🐳 Docker Compose orchestration
-├── MIGRATION.md                         # 📖 Migration guide
-└── README.md                            # This file
+├── docker-compose.yml                   # Orkestrasi Docker Compose
+├── MIGRATION.md                         # Panduan migrasi
+└── README.md                            # File ini
 ```
 
 #### Penjelasan Struktur
 
-**Separation of Concerns:**
+**Pemisahan Tanggung Jawab (Separation of Concerns):**
 
-| Directory | Purpose | Used By | Contains |
+| Direktori | Tujuan | Digunakan Oleh | Berisi |
 |-----------|---------|---------|----------|
 | `apps/` | **Source code** untuk build images | Docker Compose & Kubernetes | Dockerfile, source code, dependencies |
 | `k8s/apps/` | **Deployment configs** untuk K8s | Kubernetes only | YAML manifests (deployment, service, hpa) |
 | `monitoring/` | Monitoring configs | Docker Compose only | Prometheus/Grafana configs |
 | `k8s/monitoring/` | Monitoring configs | Kubernetes only | K8s manifests untuk Prometheus/Grafana |
 
-**Workflow:**
+**Alur Kerja:**
 ```
 1. Build:    apps/demo-apps/nodejs-app/  →  docker build  →  cloudlab-nodejs-app:latest
 2. Deploy:   k8s/apps/nodejs-app/        →  kubectl apply →  Running pods in cluster
@@ -286,7 +286,6 @@ cloud-lab/
 **Analogi:**
 - `apps/` = Dapur (tempat masak/build)
 - `k8s/apps/` = Buku menu (cara sajikan/deploy)
-```
 
 ### Melihat Logs (Docker Compose)
 
@@ -302,12 +301,12 @@ docker-compose logs -f prometheus
 docker-compose logs -f grafana
 ```
 
-## �🔧 Operations (Kubernetes)
+## Operasi (Kubernetes)
 
 ### Melihat Logs
 
 ```bash
-# View logs
+# Lihat logs
 kubectl logs -f deployment/nodejs-app -n cloudlab-apps
 kubectl logs -f deployment/python-app -n cloudlab-apps
 kubectl logs -f statefulset/prometheus -n cloudlab-monitoring
@@ -322,11 +321,11 @@ kubectl logs -l app=nodejs-app -n cloudlab-apps --tail=100
 # Manual scaling
 kubectl scale deployment nodejs-app --replicas=5 -n cloudlab-apps
 
-# Check HPA status
+# Cek status HPA
 kubectl get hpa -n cloudlab-apps
 ```
 
-### Cleanup
+### Pembersihan (Cleanup)
 
 ```bash
 # Docker Compose
@@ -354,7 +353,7 @@ kubectl delete -k k8s/
 3. Update `k8s/kustomization.yaml` untuk include resources baru
 4. Deploy: `kubectl apply -k k8s/`
 
-> **💡 Tip:** Dengan matrix strategy di CI/CD, menambah aplikasi baru ke pipeline sangat mudah - cukup tambah 1 entry di matrix tanpa duplikasi kode. Lihat [`ci/README.md`](ci/README.md) untuk detail.
+> **Tip:** Dengan strategi matriks di CI/CD, menambah aplikasi baru ke pipeline sangat mudah - cukup tambah 1 entri di matriks tanpa duplikasi kode. Lihat [`ci/README.md`](ci/README.md) untuk detail.
 
 ### Melihat Logs
 
@@ -370,40 +369,40 @@ docker-compose logs -f prometheus
 docker-compose logs -f grafana
 ```
 
-## 📈 Monitoring
+## Monitoring
 
 ### Prometheus Metrics
 
-Setiap aplikasi expose metrics di endpoint `/metrics`:
+Setiap aplikasi mengekspos metrics di endpoint `/metrics`:
 - Node.js: http://localhost:3001/metrics
 - Python: http://localhost:5000/metrics
 
 ### Grafana Dashboards
 
 1. Login ke Grafana: http://localhost:3000
-2. Credentials: `admin` / `admin123`
-3. Prometheus datasource sudah auto-configured
-4. Dashboards yang tersedia:
+2. Kredensial: `admin` / `admin123`
+3. Prometheus datasource sudah dikonfigurasi otomatis
+4. Dashboard yang tersedia:
    - **CloudLab Overview** - Monitoring semua services (request rate, response time, error rate, CPU, memory, status)
    - **Node.js Application** - Metrics khusus Node.js (event loop lag, heap memory)
    - **Python API** - Metrics khusus Flask API (endpoint performance, resource usage)
 
-Dashboards akan otomatis ter-load saat Grafana start.
+Dashboard akan otomatis dimuat saat Grafana dimulai.
 
-### Alert Rules
+### Aturan Alert
 
-Alert rules didefinisikan di `monitoring/alerts.yml`:
-- Service down detection
-- High CPU usage
-- High memory usage
-- HTTP error rate monitoring
+Aturan alert didefinisikan di `monitoring/alerts.yml`:
+- Deteksi layanan down
+- Penggunaan CPU tinggi
+- Penggunaan memori tinggi
+- Monitoring tingkat error HTTP
 
-## 🔒 Security
+## Keamanan
 
 ### SSL/TLS
 
-- Self-signed certificates untuk development
-- Untuk production, gunakan Let's Encrypt:
+- Self-signed certificates untuk pengembangan
+- Untuk produksi, gunakan Let's Encrypt:
   ```bash
   # Install certbot
   sudo apt-get install certbot
@@ -414,16 +413,16 @@ Alert rules didefinisikan di `monitoring/alerts.yml`:
   # Update nginx/nginx.conf dengan path certificate baru
   ```
 
-### Security Headers
+### Header Keamanan
 
-Nginx sudah dikonfigurasi dengan security headers:
+Nginx sudah dikonfigurasi dengan header keamanan:
 - X-Frame-Options
 - X-Content-Type-Options
 - X-XSS-Protection
 
-## 🧪 Testing
+## Pengujian (Testing)
 
-### Manual Testing
+### Pengujian Manual
 
 ```bash
 # Test Node.js endpoints
@@ -440,17 +439,17 @@ curl -k https://localhost/api/products/1
 curl http://localhost:9090/api/v1/targets
 ```
 
-### Automated Testing (CI/CD)
+### Pengujian Otomatis (CI/CD)
 
-Pipeline CI/CD menggunakan **GitHub Actions** dengan **matrix strategy** untuk scalability:
+Pipeline CI/CD menggunakan **GitHub Actions** dengan **strategi matriks** untuk skalabilitas:
 
-**Pipeline Stages:**
-1. **Validate** - Validasi Docker Compose dan Nginx config
-2. **Build Apps** - Build semua aplikasi secara parallel menggunakan matrix
-3. **Security Scan** - Vulnerability scanning dengan Trivy
-4. **Integration Tests** - Test lengkap semua services
+**Tahapan Pipeline:**
+1. **Validate** - Validasi Docker Compose dan konfigurasi Nginx
+2. **Build Apps** - Build semua aplikasi secara paralel menggunakan matriks
+3. **Security Scan** - Pemindaian kerentanan dengan Trivy
+4. **Integration Tests** - Tes lengkap semua layanan
 
-**Matrix Strategy untuk Build:**
+**Strategi Matriks untuk Build:**
 ```yaml
 strategy:
   matrix:
@@ -464,14 +463,14 @@ strategy:
 ```
 
 **Keuntungan:**
-- ✅ **Scalable** - Mudah menambah aplikasi baru
-- ✅ **Parallel** - Semua apps di-build bersamaan
-- ✅ **DRY** - Tidak ada duplikasi kode
-- ✅ **Maintainable** - Satu template untuk semua apps
+- **Scalable** - Mudah menambah aplikasi baru
+- **Parallel** - Semua apps di-build bersamaan
+- **DRY** - Tidak ada duplikasi kode
+- **Maintainable** - Satu template untuk semua apps
 
 **Menambah Aplikasi ke CI/CD:**
 
-Cukup tambahkan entry baru di matrix di file `ci/github-actions.yml`:
+Cukup tambahkan entri baru di matriks di file `ci/github-actions.yml`:
 ```yaml
 - name: golang-app
   image: cloudlab-golang-app
@@ -484,49 +483,49 @@ Cukup tambahkan entry baru di matrix di file `ci/github-actions.yml`:
 
 Lihat dokumentasi lengkap di [`ci/README.md`](ci/README.md)
 
-## 🚢 Deployment
+## Deployment
 
-### Development
+### Pengembangan
 
 ```bash
 docker-compose up -d
 ```
 
-### Production
+### Produksi
 
-1. Update environment variables
-2. Replace SSL certificates dengan production certs
-3. Update Grafana admin password
+1. Update variabel lingkungan
+2. Ganti sertifikat SSL dengan sertifikat produksi
+3. Update password admin Grafana
 4. Deploy dengan:
    ```bash
    docker-compose -f docker-compose.yml up -d
    ```
 
-## 🛠️ Troubleshooting
+## Pemecahan Masalah (Troubleshooting)
 
 ### Port sudah digunakan
 
 ```bash
-# Check port usage
+# Cek penggunaan port
 sudo lsof -i :80
 sudo lsof -i :443
 sudo lsof -i :3000
 sudo lsof -i :9090
 
-# Stop conflicting services atau ubah port di docker-compose.yml
+# Hentikan layanan yang konflik atau ubah port di docker-compose.yml
 ```
 
-### Container tidak start
+### Container tidak mulai
 
 ```bash
-# Check logs
+# Cek logs
 docker-compose logs <service-name>
 
 # Rebuild container
 docker-compose up -d --build --force-recreate <service-name>
 ```
 
-### SSL Certificate Error
+### Error Sertifikat SSL
 
 ```bash
 # Regenerate certificates
@@ -536,20 +535,20 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -subj "/C=ID/ST=Jakarta/L=Jakarta/O=CloudLab/OU=Dev/CN=localhost"
 ```
 
-### Prometheus tidak scrape metrics
+### Prometheus tidak mengambil metrics
 
-1. Check Prometheus targets: http://localhost:9090/targets
-2. Verify service expose `/metrics` endpoint
-3. Check network connectivity antar containers
-4. Review `monitoring/prometheus.yml` configuration
+1. Cek target Prometheus: http://localhost:9090/targets
+2. Verifikasi service mengekspos endpoint `/metrics`
+3. Cek konektivitas jaringan antar container
+4. Review konfigurasi `monitoring/prometheus.yml`
 
-### Grafana tidak bisa connect ke Prometheus
+### Grafana tidak bisa terhubung ke Prometheus
 
-1. Check Prometheus running: `docker-compose ps prometheus`
-2. Verify datasource config di `monitoring/grafana/datasources.yml`
-3. Test connection dari Grafana UI: Configuration → Data Sources
+1. Cek Prometheus berjalan: `docker-compose ps prometheus`
+2. Verifikasi config datasource di `monitoring/grafana/datasources.yml`
+3. Test koneksi dari Grafana UI: Configuration → Data Sources
 
-## 📝 Maintenance
+## Pemeliharaan (Maintenance)
 
 ### Backup Data
 
@@ -564,42 +563,42 @@ docker cp cloudlab-prometheus:/prometheus ./backup/prometheus
 ### Update Images
 
 ```bash
-# Pull latest images
+# Pull images terbaru
 docker-compose pull
 
 # Recreate containers
 docker-compose up -d --force-recreate
 ```
 
-### Cleanup
+### Pembersihan
 
 ```bash
-# Stop semua services
+# Hentikan semua layanan
 docker-compose down
 
-# Remove volumes (WARNING: akan hapus data)
+# Hapus volumes (PERINGATAN: akan menghapus data)
 docker-compose down -v
 
-# Remove unused images
+# Hapus images yang tidak digunakan
 docker image prune -a
 ```
 
-## 🤝 Contributing
+## Kontribusi
 
-1. Fork repository
-2. Create feature branch
-3. Commit changes
+1. Fork repositori
+2. Buat feature branch
+3. Commit perubahan
 4. Push ke branch
-5. Create Pull Request
+5. Buat Pull Request
 
-## 📄 License
+## Lisensi
 
 MIT License
 
-## 📞 Support
+## Dukungan
 
-Untuk issues atau questions, silakan buat issue di repository.
+Untuk masalah atau pertanyaan, silakan buat issue di repository.
 
 ---
 
-**Built with ❤️ for CloudLab**
+**Dibuat untuk CloudLab**

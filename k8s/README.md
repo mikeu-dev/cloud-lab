@@ -1,42 +1,42 @@
-# Kubernetes Deployment Guide
+# Panduan Deployment Kubernetes
 
 Panduan lengkap untuk deploy CloudLab ke Kubernetes cluster.
 
-## 📋 Prerequisites
+## Prasyarat
 
-### Required Tools
+### Alat yang Dibutuhkan
 - **kubectl** v1.28+ - Kubernetes CLI
 - **Docker** v20.10+ - Container runtime
-- **Kubernetes cluster** - Salah satu dari:
-  - Minikube (local development)
+- **Cluster Kubernetes** - Salah satu dari:
+  - Minikube (pengembangan lokal)
   - Kind (Kubernetes in Docker)
-  - GKE/EKS/AKS (cloud managed)
+  - GKE/EKS/AKS (managed cloud)
   - kubeadm/k3s (self-managed)
 
-### Optional Tools
+### Alat Opsional
 - **Helm** v3.0+ - Package manager
 - **k9s** - Terminal UI untuk Kubernetes
 - **kubectx/kubens** - Context dan namespace switching
 - **kustomize** - Configuration management (built-in kubectl)
 
-## 📁 Understanding Directory Structure
+## Memahami Struktur Direktori
 
-> **⚠️ PENTING:** Jangan bingung antara `apps/` dan `k8s/apps/` - mereka **BERBEDA**!
+> **PENTING:** Jangan bingung antara direktori `apps/` dan `k8s/apps/` - keduanya **BERBEDA**.
 
 ```
 cloud-lab/
-├── apps/                    # 📦 SOURCE CODE (untuk build images)
+├── apps/                    # SOURCE CODE (untuk build images)
 │   └── demo-apps/
 │       ├── nodejs-app/      # ← Dockerfile, package.json, server.js
 │       └── python-app/      # ← Dockerfile, requirements.txt, app.py
 │
-└── k8s/                     # ☸️ KUBERNETES CONFIGS (untuk deploy)
-    └── apps/                # 🚀 DEPLOYMENT MANIFESTS
+└── k8s/                     # KUBERNETES CONFIGS (untuk deploy)
+    └── apps/                # DEPLOYMENT MANIFESTS
         ├── nodejs-app/      # ← deployment.yaml, service.yaml, hpa.yaml
         └── python-app/      # ← deployment.yaml, service.yaml, hpa.yaml
 ```
 
-**Workflow:**
+**Alur Kerja:**
 1. **Build** dari `apps/` → Docker image
 2. **Deploy** dengan `k8s/apps/` → Running pods
 
@@ -44,20 +44,20 @@ cloud-lab/
 - `apps/` = Resep masakan (cara buat)
 - `k8s/apps/` = Menu restoran (cara sajikan)
 
-Lihat [main README](../README.md#struktur-direktori) untuk penjelasan lengkap.
+Lihat [README utama](../README.md#struktur-direktori) untuk penjelasan lengkap.
 
-## 🚀 Quick Start
+## Panduan Memulai Cepat (Quick Start)
 
-### 1. Setup Kubernetes Cluster
+### 1. Setup Cluster Kubernetes
 
-#### Option A: Minikube (Recommended untuk Development)
+#### Opsi A: Minikube (Disarankan untuk Pengembangan)
 
 ```bash
 # Install Minikube
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
-# Start cluster dengan resources yang cukup
+# Mulai cluster dengan resources yang cukup
 minikube start --cpus=4 --memory=8192 --disk-size=20g
 
 # Enable addons
@@ -65,12 +65,12 @@ minikube addons enable ingress
 minikube addons enable metrics-server
 minikube addons enable storage-provisioner
 
-# Verify cluster
+# Verifikasi cluster
 kubectl cluster-info
 kubectl get nodes
 ```
 
-#### Option B: Kind (Kubernetes in Docker)
+#### Opsi B: Kind (Kubernetes in Docker)
 
 ```bash
 # Install Kind
@@ -78,7 +78,7 @@ curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
 chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
 
-# Create cluster dengan config
+# Buat cluster dengan konfigurasi
 cat <<EOF | kind create cluster --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
@@ -105,9 +105,9 @@ EOF
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 ```
 
-#### Option C: Cloud Managed (GKE/EKS/AKS)
+#### Opsi C: Cloud Managed (GKE/EKS/AKS)
 
-Ikuti dokumentasi cloud provider masing-masing.
+Silakan ikuti dokumentasi penyedia layanan cloud masing-masing.
 
 ### 2. Build dan Push Docker Images
 
@@ -128,10 +128,10 @@ minikube image load cloudlab-python-app:latest
 # docker push your-registry/cloudlab-nodejs-app:latest
 ```
 
-### 3. Generate SSL Certificates
+### 3. Generate Sertifikat SSL
 
 ```bash
-# Generate self-signed certificate untuk development
+# Generate self-signed certificate untuk pengembangan
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout /tmp/tls.key \
   -out /tmp/tls.crt \
@@ -152,7 +152,7 @@ sed -i "s|tls.key:.*|tls.key: $TLS_KEY|" k8s/base/secrets/ssl-certs.yaml
 # Deploy semua resources dengan kustomize
 kubectl apply -k k8s/
 
-# Atau deploy secara manual per component
+# Atau deploy secara manual per komponen
 kubectl apply -f k8s/base/namespace.yaml
 kubectl apply -f k8s/base/configmaps/
 kubectl apply -f k8s/base/secrets/
@@ -161,34 +161,34 @@ kubectl apply -f k8s/monitoring/
 kubectl apply -f k8s/ingress/
 ```
 
-### 5. Verify Deployment
+### 5. Verifikasi Deployment
 
 ```bash
-# Check namespaces
+# Cek namespaces
 kubectl get namespaces
 
-# Check pods
+# Cek pods
 kubectl get pods -n cloudlab-apps
 kubectl get pods -n cloudlab-monitoring
 
-# Check services
+# Cek services
 kubectl get svc -n cloudlab-apps
 kubectl get svc -n cloudlab-monitoring
 
-# Check ingress
+# Cek ingress
 kubectl get ingress -n cloudlab-apps
 kubectl get ingress -n cloudlab-monitoring
 
-# Wait for rollout
+# Tunggu rollout selesai
 kubectl rollout status deployment/nodejs-app -n cloudlab-apps
 kubectl rollout status deployment/python-app -n cloudlab-apps
 kubectl rollout status deployment/grafana -n cloudlab-monitoring
 kubectl rollout status statefulset/prometheus -n cloudlab-monitoring
 ```
 
-### 6. Access Applications
+### 6. Akses Aplikasi
 
-#### Option A: Port Forwarding (Recommended untuk Development)
+#### Opsi A: Port Forwarding (Disarankan untuk Pengembangan)
 
 ```bash
 # Node.js app
@@ -203,40 +203,40 @@ kubectl port-forward svc/grafana 3000:3000 -n cloudlab-monitoring
 # Prometheus
 kubectl port-forward svc/prometheus 9090:9090 -n cloudlab-monitoring
 
-# Access:
+# Akses:
 # http://localhost:3001 - Node.js app
 # http://localhost:5000 - Python app
 # http://localhost:3000 - Grafana (admin/admin123)
 # http://localhost:9090 - Prometheus
 ```
 
-#### Option B: Ingress (Production)
+#### Opsi B: Ingress (Produksi)
 
 ```bash
-# Get Ingress IP/hostname
+# Dapatkan Ingress IP/hostname
 kubectl get ingress -n cloudlab-apps
 
 # Untuk Minikube
-minikube ip  # Catat IP address
+minikube ip  # Catat alamat IP
 
-# Add ke /etc/hosts
+# Tambahkan ke /etc/hosts
 echo "$(minikube ip) cloudlab.local grafana.cloudlab.local prometheus.cloudlab.local" | sudo tee -a /etc/hosts
 
-# Access:
+# Akses:
 # https://cloudlab.local - Main app
 # https://grafana.cloudlab.local - Grafana
 # https://prometheus.cloudlab.local - Prometheus
 ```
 
-## 📊 Monitoring
+## Monitoring
 
 ### Prometheus
 
 ```bash
-# Access Prometheus
+# Akses Prometheus
 kubectl port-forward svc/prometheus 9090:9090 -n cloudlab-monitoring
 
-# Check targets
+# Cek targets
 curl http://localhost:9090/api/v1/targets | jq
 
 # Query metrics
@@ -246,25 +246,25 @@ curl 'http://localhost:9090/api/v1/query?query=up'
 ### Grafana
 
 ```bash
-# Access Grafana
+# Akses Grafana
 kubectl port-forward svc/grafana 3000:3000 -n cloudlab-monitoring
 
 # Login: admin / admin123
-# Datasource sudah auto-configured ke Prometheus
+# Datasource sudah dikonfigurasi otomatis ke Prometheus
 ```
 
-## 🔧 Operations
+## Operasi
 
-### Scaling
+### Penskalaan (Scaling)
 
 ```bash
 # Manual scaling
 kubectl scale deployment nodejs-app --replicas=5 -n cloudlab-apps
 
-# Check HPA status
+# Cek status HPA
 kubectl get hpa -n cloudlab-apps
 
-# Describe HPA
+# Deskripsikan HPA
 kubectl describe hpa nodejs-app-hpa -n cloudlab-apps
 ```
 
@@ -274,20 +274,20 @@ kubectl describe hpa nodejs-app-hpa -n cloudlab-apps
 # Update image
 kubectl set image deployment/nodejs-app nodejs-app=cloudlab-nodejs-app:v2 -n cloudlab-apps
 
-# Check rollout status
+# Cek status rollout
 kubectl rollout status deployment/nodejs-app -n cloudlab-apps
 
 # Rollback jika ada masalah
 kubectl rollout undo deployment/nodejs-app -n cloudlab-apps
 
-# Check rollout history
+# Cek histori rollout
 kubectl rollout history deployment/nodejs-app -n cloudlab-apps
 ```
 
 ### Logs
 
 ```bash
-# View logs
+# Lihat logs
 kubectl logs -f deployment/nodejs-app -n cloudlab-apps
 kubectl logs -f deployment/python-app -n cloudlab-apps
 kubectl logs -f statefulset/prometheus -n cloudlab-monitoring
@@ -302,23 +302,23 @@ stern nodejs-app -n cloudlab-apps
 ### Debugging
 
 ```bash
-# Describe pod
+# Deskripsikan pod
 kubectl describe pod <pod-name> -n cloudlab-apps
 
-# Execute command di pod
+# Eksekusi perintah di pod
 kubectl exec -it <pod-name> -n cloudlab-apps -- /bin/sh
 
-# Check events
+# Cek events
 kubectl get events -n cloudlab-apps --sort-by='.lastTimestamp'
 
-# Check resource usage
+# Cek penggunaan resource
 kubectl top nodes
 kubectl top pods -n cloudlab-apps
 ```
 
-## 🧪 Testing
+## Pengujian (Testing)
 
-### Health Checks
+### Pemeriksaan Kesehatan (Health Checks)
 
 ```bash
 # Test health endpoints via port-forward
@@ -329,7 +329,7 @@ kubectl port-forward svc/python-app 5000:5000 -n cloudlab-apps &
 curl http://localhost:5000/health
 ```
 
-### Load Testing
+### Pengujian Beban (Load Testing)
 
 ```bash
 # Generate load untuk test autoscaling
@@ -342,30 +342,30 @@ while true; do wget -q -O- http://nodejs-app.cloudlab-apps.svc.cluster.local:300
 kubectl get hpa -n cloudlab-apps --watch
 ```
 
-## 🔒 Security
+## Keamanan
 
-### Network Policies (Optional)
+### Network Policies (Opsional)
 
 ```bash
-# Apply network policies untuk isolasi
+# Terapkan network policies untuk isolasi
 kubectl apply -f k8s/network-policies/
 ```
 
 ### RBAC
 
 ```bash
-# Check service accounts
+# Cek service accounts
 kubectl get serviceaccounts -n cloudlab-monitoring
 
-# Check roles
+# Cek roles
 kubectl get clusterroles | grep prometheus
 kubectl get clusterrolebindings | grep prometheus
 ```
 
-### Secrets Management
+### Manajemen Secrets
 
 ```bash
-# View secrets (encoded)
+# Lihat secrets (encoded)
 kubectl get secrets -n cloudlab-apps
 kubectl get secrets -n cloudlab-monitoring
 
@@ -373,95 +373,95 @@ kubectl get secrets -n cloudlab-monitoring
 kubectl get secret cloudlab-tls -n cloudlab-apps -o jsonpath='{.data.tls\.crt}' | base64 -d
 ```
 
-## 🧹 Cleanup
+## Pembersihan (Cleanup)
 
 ```bash
-# Delete semua resources
+# Hapus semua resources
 kubectl delete -k k8s/
 
-# Atau delete per namespace
+# Atau hapus per namespace
 kubectl delete namespace cloudlab-apps
 kubectl delete namespace cloudlab-monitoring
 
-# Delete cluster (Minikube)
+# Hapus cluster (Minikube)
 minikube delete
 
-# Delete cluster (Kind)
+# Hapus cluster (Kind)
 kind delete cluster
 ```
 
-## 🛠️ Troubleshooting
+## Pemecahan Masalah (Troubleshooting)
 
-### Pods tidak start
+### Pods tidak mulai
 
 ```bash
-# Check pod status
+# Cek status pod
 kubectl get pods -n cloudlab-apps
 
-# Describe pod untuk lihat events
+# Deskripsikan pod untuk melihat events
 kubectl describe pod <pod-name> -n cloudlab-apps
 
-# Check logs
+# Cek logs
 kubectl logs <pod-name> -n cloudlab-apps
 
-# Common issues:
+# Masalah umum:
 # - ImagePullBackOff: Image tidak ditemukan
 # - CrashLoopBackOff: Container crash saat start
 # - Pending: Tidak cukup resources
 ```
 
-### Ingress tidak accessible
+### Ingress tidak dapat diakses
 
 ```bash
-# Check ingress controller
+# Cek ingress controller
 kubectl get pods -n ingress-nginx
 
-# Check ingress resource
+# Cek resource ingress
 kubectl describe ingress cloudlab-ingress -n cloudlab-apps
 
-# Check service endpoints
+# Cek endpoints service
 kubectl get endpoints -n cloudlab-apps
 
-# Untuk Minikube, pastikan tunnel running
+# Untuk Minikube, pastikan tunnel berjalan
 minikube tunnel
 ```
 
-### Prometheus tidak scrape metrics
+### Prometheus tidak mengambil metrics
 
 ```bash
-# Check Prometheus targets
+# Cek targets Prometheus
 kubectl port-forward svc/prometheus 9090:9090 -n cloudlab-monitoring
 # Buka http://localhost:9090/targets
 
-# Check service discovery
+# Cek service discovery
 kubectl get servicemonitors -n cloudlab-monitoring
 
-# Check pod annotations
+# Cek anotasi pod
 kubectl get pod <pod-name> -n cloudlab-apps -o yaml | grep prometheus.io
 ```
 
-### Storage issues
+### Masalah penyimpanan (Storage)
 
 ```bash
-# Check PVCs
+# Cek PVCs
 kubectl get pvc -n cloudlab-monitoring
 
-# Check PVs
+# Cek PVs
 kubectl get pv
 
-# Describe PVC untuk lihat events
+# Deskripsikan PVC untuk melihat events
 kubectl describe pvc grafana-storage -n cloudlab-monitoring
 
-# Untuk Minikube, pastikan storage provisioner enabled
+# Untuk Minikube, pastikan storage provisioner aktif
 minikube addons enable storage-provisioner
 ```
 
-## 📚 Advanced Topics
+## Topik Tingkat Lanjut
 
-### Helm Deployment
+### Deployment Menggunakan Helm
 
 ```bash
-# Install dengan Helm (jika helm charts sudah dibuat)
+# Install dengan Helm (jika chart helm sudah dibuat)
 helm install cloudlab ./helm/cloudlab -n cloudlab-apps --create-namespace
 
 # Upgrade
@@ -495,26 +495,26 @@ kubectl label namespace cloudlab-apps istio-injection=enabled
 kubectl rollout restart deployment -n cloudlab-apps
 ```
 
-## 🔗 Resources
+## Sumber Daya
 
-- [Kubernetes Documentation](https://kubernetes.io/docs/)
-- [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
-- [Kustomize Documentation](https://kustomize.io/)
-- [Helm Documentation](https://helm.sh/docs/)
-- [Prometheus Operator](https://prometheus-operator.dev/)
+- [Dokumentasi Kubernetes](https://kubernetes.io/docs/)
+- [Cheat Sheet kubectl](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
+- [Dokumentasi Kustomize](https://kustomize.io/)
+- [Dokumentasi Helm](https://helm.sh/docs/)
+- [Operator Prometheus](https://prometheus-operator.dev/)
 
-## ❓ FAQ
+## FAQ
 
-Punya pertanyaan? Check [FAQ.md](FAQ.md) untuk jawaban pertanyaan umum seperti:
+Punya pertanyaan? Cek [FAQ.md](FAQ.md) untuk jawaban pertanyaan umum seperti:
 - Mengapa ada `apps/` dan `k8s/apps/`?
 - Bagaimana cara update aplikasi?
 - Troubleshooting pods yang pending
 - Dan banyak lagi...
 
-## 📞 Support
+## Dukungan
 
-Untuk issues atau pertanyaan, silakan buat issue di repository.
+Untuk masalah atau pertanyaan, silakan buat issue di repository.
 
 ---
 
-**Happy Kubernetes Deployment! 🚀**
+**Selamat Melakukan Deployment Kubernetes!**
