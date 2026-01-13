@@ -26,6 +26,8 @@ spec:
         prometheus.io/port: "5000"
         prometheus.io/path: "/metrics"
     spec:
+      securityContext:
+        runAsNonRoot: true
       containers:
         - name: python-app
           image: cloudlab-python-app:latest
