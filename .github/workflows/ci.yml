@@ -87,7 +87,13 @@ jobs:
         run: |
           docker run -d --name test-${{ matrix.app.name }} -p ${{ matrix.app.port }}:${{ matrix.app.port }} ${{ matrix.app.image }}:${{ github.sha }}
           sleep ${{ matrix.app.sleep_time }}
-          curl -f http://127.0.0.1:${{ matrix.app.port }}${{ matrix.app.health_endpoint }} || exit 1
+          if ! curl -f http://127.0.0.1:${{ matrix.app.port }}${{ matrix.app.health_endpoint }}; then
+            echo "::error::Health check failed for ${{ matrix.app.name }}!"
+            echo "::group::Container Logs"
+            docker logs test-${{ matrix.app.name }}
+            echo "::endgroup::"
+            exit 1
+          fi
           curl -f http://127.0.0.1:${{ matrix.app.port }}${{ matrix.app.metrics_endpoint }} || exit 1
           docker stop test-${{ matrix.app.name }}
           docker rm test-${{ matrix.app.name }}
