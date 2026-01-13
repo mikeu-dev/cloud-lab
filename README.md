@@ -595,6 +595,8 @@ docker image prune -a
 
 MIT License
 
+Copyright (c) 2026 mikeu-dev
+
 ## Dukungan
 
 Untuk masalah atau pertanyaan, silakan buat issue di repository.
