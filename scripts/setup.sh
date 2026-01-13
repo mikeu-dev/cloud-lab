@@ -17,13 +17,13 @@ if ! command -v docker &> /dev/null; then
 fi
 echo "✅ Docker found: $(docker --version)"
 
-# Check Docker Compose
+# Check Docker Compose (v2)
 echo "📦 Checking Docker Compose installation..."
-if ! command -v docker-compose &> /dev/null; then
-    echo "❌ Docker Compose is not installed. Please install Docker Compose first."
+if ! docker compose version &> /dev/null; then
+    echo "❌ Docker Compose (v2) is not installed/enabled. Please install Docker Desktop or Docker Compose v2 plugin."
     exit 1
 fi
-echo "✅ Docker Compose found: $(docker-compose --version)"
+echo "✅ Docker Compose found: $(docker compose version --short)"
 
 # Create necessary directories
 echo ""
@@ -61,25 +61,25 @@ fi
 # Validate Docker Compose configuration
 echo ""
 echo "🔍 Validating Docker Compose configuration..."
-docker-compose config > /dev/null
+docker compose config > /dev/null
 echo "✅ Docker Compose configuration is valid"
 
 # Pull images
 echo ""
 echo "📥 Pulling Docker images..."
-docker-compose pull
+docker compose pull
 echo "✅ Images pulled"
 
 # Build custom images
 echo ""
 echo "🔨 Building application images..."
-docker-compose build
+docker compose build
 echo "✅ Images built"
 
 # Start services
 echo ""
 echo "🚀 Starting services..."
-docker-compose up -d
+docker compose up -d
 echo "✅ Services started"
 
 # Wait for services to be ready
@@ -128,8 +128,8 @@ echo "  • Grafana:      http://localhost:3000 (admin/admin123)"
 echo "  • Prometheus:   http://localhost:9090"
 echo ""
 echo "📝 Useful commands:"
-echo "  • View logs:    docker-compose logs -f"
-echo "  • Stop:         docker-compose down"
-echo "  • Restart:      docker-compose restart"
+echo "  • View logs:    docker compose logs -f"
+echo "  • Stop:         docker compose down"
+echo "  • Restart:      docker compose restart"
 echo ""
 echo "🎉 Happy coding!"

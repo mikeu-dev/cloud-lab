@@ -18,14 +18,14 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 echo "🛑 Stopping services..."
-docker-compose down
+docker compose down
 
 read -p "🗑️  Remove volumes (all data will be lost)? (y/N) " -n 1 -r
 echo ""
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "🗑️  Removing volumes..."
-    docker-compose down -v
+    docker compose down -v
     echo "✅ Volumes removed"
 fi
 
@@ -35,7 +35,7 @@ echo ""
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "🗑️  Removing images..."
-    docker-compose down --rmi all
+    docker compose down --rmi all
     echo "✅ Images removed"
 fi
 
