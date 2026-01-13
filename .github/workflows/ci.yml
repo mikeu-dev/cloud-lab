@@ -78,6 +78,7 @@ jobs:
           context: ${{ matrix.app.context }}
           file: ${{ matrix.app.context }}/Dockerfile
           push: false
+          load: true
           tags: ${{ matrix.app.image }}:${{ github.sha }}
           cache-from: type=gha,scope=${{ matrix.app.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.app.name }}
