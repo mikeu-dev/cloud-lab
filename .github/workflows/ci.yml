@@ -63,7 +63,7 @@ jobs:
             port: 5000
             health_endpoint: /api/health
             metrics_endpoint: /metrics
-            sleep_time: 10
+            sleep_time: 20
       fail-fast: false # Continue building other apps even if one fails
     steps:
       - name: Checkout code
@@ -87,8 +87,8 @@ jobs:
         run: |
           docker run -d --name test-${{ matrix.app.name }} -p ${{ matrix.app.port }}:${{ matrix.app.port }} ${{ matrix.app.image }}:${{ github.sha }}
           sleep ${{ matrix.app.sleep_time }}
-          curl -f http://localhost:${{ matrix.app.port }}${{ matrix.app.health_endpoint }} || exit 1
-          curl -f http://localhost:${{ matrix.app.port }}${{ matrix.app.metrics_endpoint }} || exit 1
+          curl -f http://127.0.0.1:${{ matrix.app.port }}${{ matrix.app.health_endpoint }} || exit 1
+          curl -f http://127.0.0.1:${{ matrix.app.port }}${{ matrix.app.metrics_endpoint }} || exit 1
           docker stop test-${{ matrix.app.name }}
           docker rm test-${{ matrix.app.name }}
 
