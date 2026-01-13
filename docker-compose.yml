@@ -150,9 +150,10 @@ services:
           "--spider",
           "http://localhost:3001/health",
         ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   # Python Flask Demo App
   python-app:
@@ -183,9 +184,10 @@ services:
           "--spider",
           "http://localhost:5000/api/health",
         ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
 networks:
   cloudlab-network:
