@@ -1,6 +1,6 @@
-# FAQ - Frequently Asked Questions
+# FAQ - Pertanyaan yang Sering Diajukan
 
-## ❓ Pertanyaan Umum
+## Pertanyaan Umum
 
 ### 1. Mengapa ada folder `apps/` dan `k8s/apps/`? Apakah duplikasi?
 
@@ -9,13 +9,13 @@
 | Folder | Fungsi | Berisi | Digunakan Untuk |
 |--------|--------|--------|-----------------|
 | `apps/` | Source code aplikasi | Dockerfile, source code, dependencies | Build Docker images |
-| `k8s/apps/` | Deployment configuration | YAML manifests (deployment, service, hpa) | Deploy ke Kubernetes |
+| `k8s/apps/` | Konfigurasi Deployment | YAML manifests (deployment, service, hpa) | Deploy ke Kubernetes |
 
 **Analogi:**
 - `apps/` = Dapur (tempat masak/build aplikasi)
 - `k8s/apps/` = Buku menu (cara sajikan/deploy aplikasi)
 
-**Workflow:**
+**Alur Kerja:**
 ```
 apps/demo-apps/nodejs-app/
   ├── Dockerfile          ─┐
@@ -36,7 +36,7 @@ k8s/apps/nodejs-app/
 
 ### 3. Kenapa ada `monitoring/` dan `k8s/monitoring/`?
 
-Sama seperti `apps/`, ini juga separation of concerns:
+Sama seperti `apps/`, ini juga pemisahan tanggung jawab (separation of concerns):
 
 | Folder | Untuk | Berisi |
 |--------|-------|--------|
@@ -45,23 +45,23 @@ Sama seperti `apps/`, ini juga separation of concerns:
 
 ### 4. Apakah saya bisa menggunakan Docker Compose dan Kubernetes bersamaan?
 
-**TIDAK direkomendasikan** untuk production. Pilih salah satu:
-- **Development**: Docker Compose (lebih simple)
-- **Production**: Kubernetes (lebih robust, scalable)
+**TIDAK direkomendasikan** untuk produksi. Pilih salah satu:
+- **Pengembangan**: Docker Compose (lebih sederhana)
+- **Produksi**: Kubernetes (lebih kuat, dapat diskalakan)
 
-Tapi untuk testing, Anda bisa run keduanya di environment berbeda.
+Tapi untuk pengujian, Anda bisa menjalankan keduanya di environment berbeda.
 
 ### 5. Bagaimana cara menambah aplikasi baru?
 
 **Untuk Docker Compose:**
-1. Buat folder di `apps/demo-apps/<app-name>/`
+1. Buat direktori di `apps/demo-apps/<app-name>/`
 2. Tambahkan Dockerfile dan source code
 3. Update `docker-compose.yml`
 4. Update `nginx/nginx.conf` untuk routing
 
 **Untuk Kubernetes:**
-1. Buat folder di `apps/demo-apps/<app-name>/` (sama seperti di atas)
-2. Buat folder di `k8s/apps/<app-name>/`
+1. Buat direktori di `apps/demo-apps/<app-name>/` (sama seperti di atas)
+2. Buat direktori di `k8s/apps/<app-name>/`
 3. Buat `deployment.yaml`, `service.yaml`, `hpa.yaml`
 4. Update `k8s/kustomization.yaml`
 5. Update `k8s/ingress/ingress.yaml` untuk routing
@@ -94,7 +94,7 @@ images:
 
 ### 7. Bagaimana cara update aplikasi yang sudah running?
 
-**Option 1: Rebuild image dan redeploy**
+**Opsi 1: Rebuild image dan redeploy**
 ```bash
 # 1. Rebuild image
 cd apps/demo-apps/nodejs-app
@@ -110,7 +110,7 @@ kubectl set image deployment/nodejs-app nodejs-app=cloudlab-nodejs-app:v2 -n clo
 kubectl rollout status deployment/nodejs-app -n cloudlab-apps
 ```
 
-**Option 2: Update code dan apply**
+**Opsi 2: Update kode dan apply**
 ```bash
 # 1. Edit source code di apps/
 # 2. Rebuild dan load image
@@ -118,29 +118,29 @@ kubectl rollout status deployment/nodejs-app -n cloudlab-apps
 kubectl rollout restart deployment/nodejs-app -n cloudlab-apps
 ```
 
-### 8. Pods stuck di "Pending" status, kenapa?
+### 8. Pods tertahan di status "Pending", kenapa?
 
 **Penyebab umum:**
 - Tidak cukup resources (CPU/memory) di cluster
 - PersistentVolume tidak tersedia
-- Node selector tidak match
+- Node selector tidak cocok
 
 **Debugging:**
 ```bash
-# Check pod events
+# Cek event pod
 kubectl describe pod <pod-name> -n cloudlab-apps
 
-# Check node resources
+# Cek resource node
 kubectl top nodes
 
-# Check PVC status
+# Cek status PVC
 kubectl get pvc -n cloudlab-monitoring
 ```
 
 **Solusi:**
-- Scale down replicas jika resource terbatas
-- Enable storage provisioner untuk Minikube
-- Adjust resource requests/limits
+- Kurangi jumlah replika (Scale down) jika resource terbatas
+- Aktifkan storage provisioner untuk Minikube
+- Sesuaikan permintaan/limit resource
 
 ### 9. Bagaimana cara melihat logs dari semua pods?
 
@@ -155,17 +155,17 @@ stern nodejs-app -n cloudlab-apps
 ### 10. Apakah HPA (autoscaling) langsung bekerja?
 
 **TIDAK otomatis.** HPA membutuhkan:
-1. **Metrics Server** harus installed
+1. **Metrics Server** harus terinstal
    ```bash
    # Untuk Minikube
    minikube addons enable metrics-server
    
-   # Verify
+   # Verifikasi
    kubectl top nodes
    kubectl top pods -n cloudlab-apps
    ```
 
-2. **Load** yang cukup untuk trigger scaling
+2. **Beban (Load)** yang cukup untuk memicu scaling
    ```bash
    # Generate load
    kubectl run -it --rm load-generator --image=busybox -- /bin/sh
@@ -175,10 +175,10 @@ stern nodejs-app -n cloudlab-apps
    kubectl get hpa -n cloudlab-apps --watch
    ```
 
-### 11. SSL certificates tidak bekerja, kenapa?
+### 11. Sertifikat SSL tidak bekerja, kenapa?
 
 **Penyebab:**
-- Secret `cloudlab-tls` masih menggunakan placeholder values
+- Secret `cloudlab-tls` masih menggunakan nilai placeholder
 
 **Solusi:**
 ```bash
@@ -198,26 +198,26 @@ kubectl delete secret cloudlab-tls -n cloudlab-apps
 kubectl apply -f k8s/base/secrets/ssl-certs.yaml
 ```
 
-**Untuk production:**
+**Untuk produksi:**
 Install cert-manager dan gunakan Let's Encrypt:
 ```bash
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
 kubectl apply -f k8s/ingress/cert-manager.yaml
 ```
 
-### 12. Bagaimana cara cleanup semua resources?
+### 12. Bagaimana cara membersihkan (cleanup) semua resources?
 
-**Option 1: Menggunakan script**
+**Opsi 1: Menggunakan skrip**
 ```bash
 ./k8s/scripts/cleanup.sh
 ```
 
-**Option 2: Manual**
+**Opsi 2: Manual**
 ```bash
-# Delete via kustomization
+# Hapus via kustomization
 kubectl delete -k k8s/
 
-# Atau delete namespaces (cascade delete semua resources)
+# Atau hapus namespaces (cascade delete semua resources)
 kubectl delete namespace cloudlab-apps
 kubectl delete namespace cloudlab-monitoring
 ```
@@ -235,61 +235,61 @@ kubectl cp grafana-<pod-id>:/var/lib/grafana ./backup/grafana -n cloudlab-monito
 kubectl cp prometheus-0:/prometheus ./backup/prometheus -n cloudlab-monitoring
 ```
 
-### 14. Bagaimana cara access Grafana/Prometheus dari luar cluster?
+### 14. Bagaimana cara akses Grafana/Prometheus dari luar cluster?
 
-**Option 1: Port Forward (Development)**
+**Opsi 1: Port Forward (Pengembangan)**
 ```bash
 kubectl port-forward svc/grafana 3000:3000 -n cloudlab-monitoring
-# Access: http://localhost:3000
+# Akses: http://localhost:3000
 ```
 
-**Option 2: Ingress (Production)**
+**Opsi 2: Ingress (Produksi)**
 ```bash
-# Sudah configured di k8s/ingress/ingress.yaml
-# Access: https://grafana.cloudlab.local (setelah update /etc/hosts)
+# Sudah dikonfigurasi di k8s/ingress/ingress.yaml
+# Akses: https://grafana.cloudlab.local (setelah update /etc/hosts)
 ```
 
-**Option 3: NodePort (Testing)**
+**Opsi 3: NodePort (Pengujian)**
 ```bash
-# Edit service type
+# Edit tipe service
 kubectl patch svc grafana -n cloudlab-monitoring -p '{"spec":{"type":"NodePort"}}'
 
-# Get NodePort
+# Dapatkan NodePort
 kubectl get svc grafana -n cloudlab-monitoring
 
-# Access via Minikube IP
+# Akses via IP Minikube
 minikube ip
 # http://<minikube-ip>:<nodeport>
 ```
 
 ### 15. Dimana saya bisa belajar lebih lanjut tentang Kubernetes?
 
-**Official Resources:**
-- [Kubernetes Documentation](https://kubernetes.io/docs/)
-- [Kubernetes Tutorials](https://kubernetes.io/docs/tutorials/)
-- [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
+**Sumber Daya Resmi:**
+- [Dokumentasi Kubernetes](https://kubernetes.io/docs/)
+- [Tutorial Kubernetes](https://kubernetes.io/docs/tutorials/)
+- [Cheat Sheet kubectl](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
-**Interactive Learning:**
-- [Katacoda Kubernetes Scenarios](https://www.katacoda.com/courses/kubernetes)
+**Pembelajaran Interaktif:**
+- [Skenario Katacoda Kubernetes](https://www.katacoda.com/courses/kubernetes)
 - [Play with Kubernetes](https://labs.play-with-k8s.com/)
 
-**Books:**
-- "Kubernetes Up & Running" by Kelsey Hightower
-- "The Kubernetes Book" by Nigel Poulton
+**Buku:**
+- "Kubernetes Up & Running" oleh Kelsey Hightower
+- "The Kubernetes Book" oleh Nigel Poulton
 
-**YouTube Channels:**
+**Saluran YouTube:**
 - TechWorld with Nana
 - Just me and Opensource
 - KodeKloud
 
 ---
 
-## 🆘 Masih Ada Pertanyaan?
+## Masih Ada Pertanyaan?
 
 Jika pertanyaan Anda tidak terjawab di sini:
-1. Check [main README](../README.md)
-2. Check [k8s/README.md](README.md)
-3. Check [MIGRATION.md](../MIGRATION.md)
+1. Cek [README utama](../README.md)
+2. Cek [k8s/README.md](README.md)
+3. Cek [MIGRATION.md](../MIGRATION.md)
 4. Buat issue di repository
 
-**Happy Learning! 🚀**
+**Selamat Belajar!**

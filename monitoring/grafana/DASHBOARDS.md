@@ -1,115 +1,115 @@
-# Grafana Dashboards - CloudLab
+# Dashboard Grafana - CloudLab
 
-## Available Dashboards
+## Dashboard Tersedia
 
 ### 1. CloudLab Overview
 **UID**: `cloudlab-overview`
 
-Dashboard utama untuk monitoring semua services dalam CloudLab environment.
+Dashboard utama untuk memantau semua layanan dalam lingkungan CloudLab.
 
-**Panels**:
-- HTTP Request Rate - Request per second untuk semua services
-- HTTP Response Time - p50 dan p95 percentiles
-- Error Rate (5xx) - Gauge untuk monitoring error rate
-- CPU Usage - CPU usage per service
-- Memory Usage - Memory consumption per service
-- Service Status - Up/Down status untuk semua services
+**Panel**:
+- HTTP Request Rate - Permintaan per detik untuk semua layanan
+- HTTP Response Time - Persentil p50 dan p95
+- Error Rate (5xx) - Gauge untuk memantau tingkat kesalahan
+- CPU Usage - Penggunaan CPU per layanan
+- Memory Usage - Konsumsi memori per layanan
+- Service Status - Status Up/Down untuk semua layanan
 
-**Refresh**: 5 seconds
-**Time Range**: Last 15 minutes
+**Refresh**: 5 detik
+**Rentang Waktu**: 15 menit terakhir
 
 ---
 
 ### 2. Node.js Application
 **UID**: `cloudlab-nodejs`
 
-Dashboard khusus untuk monitoring Node.js Express application.
+Dashboard khusus untuk memantau aplikasi Node.js Express.
 
-**Panels**:
-- Request Rate by Endpoint - Breakdown request rate per endpoint
-- Response Time Percentiles - p50 dan p95 per route
-- Event Loop Lag - Node.js event loop performance
-- Heap Memory Usage - Heap used vs heap total
+**Panel**:
+- Request Rate by Endpoint - Rincian tingkat permintaan per endpoint
+- Response Time Percentiles - p50 dan p95 per rute
+- Event Loop Lag - Performa event loop Node.js
+- Heap Memory Usage - Heap digunakan vs heap total
 
-**Refresh**: 5 seconds
-**Time Range**: Last 15 minutes
+**Refresh**: 5 detik
+**Rentang Waktu**: 15 menit terakhir
 
 **Metrics**:
-- `http_requests_total` - Total HTTP requests
-- `http_request_duration_seconds` - Request duration histogram
-- `nodejs_eventloop_lag_seconds` - Event loop lag
-- `nodejs_heap_size_used_bytes` - Heap memory used
-- `nodejs_heap_size_total_bytes` - Total heap size
+- `http_requests_total` - Total permintaan HTTP
+- `http_request_duration_seconds` - Histogram durasi permintaan
+- `nodejs_eventloop_lag_seconds` - Lag event loop
+- `nodejs_heap_size_used_bytes` - Memori heap yang digunakan
+- `nodejs_heap_size_total_bytes` - Total ukuran heap
 
 ---
 
 ### 3. Python API
 **UID**: `cloudlab-python`
 
-Dashboard khusus untuk monitoring Python Flask API.
+Dashboard khusus untuk memantau Python Flask API.
 
-**Panels**:
-- API Request Rate - Request per second per endpoint
-- API Response Time - p50 dan p95 percentiles
-- CPU Usage - Process CPU usage
-- Memory Usage - Process memory consumption
-- Error Rate - Error rate gauge
+**Panel**:
+- API Request Rate - Permintaan per detik per endpoint
+- API Response Time - Persentil p50 dan p95
+- CPU Usage - Penggunaan CPU proses
+- Memory Usage - Konsumsi memori proses
+- Error Rate - Gauge tingkat kesalahan
 
-**Refresh**: 5 seconds
-**Time Range**: Last 15 minutes
+**Refresh**: 5 detik
+**Rentang Waktu**: 15 menit terakhir
 
 **Metrics**:
-- `http_requests_total` - Total HTTP requests
-- `http_request_duration_seconds` - Request duration histogram
-- `process_cpu_seconds_total` - CPU time
-- `process_resident_memory_bytes` - Memory usage
+- `http_requests_total` - Total permintaan HTTP
+- `http_request_duration_seconds` - Histogram durasi permintaan
+- `process_cpu_seconds_total` - Waktu CPU
+- `process_resident_memory_bytes` - Penggunaan memori
 
 ---
 
-## Accessing Dashboards
+## Mengakses Dashboard
 
-1. Start CloudLab services:
+1. Mulai layanan CloudLab:
    ```bash
    docker-compose up -d
    ```
 
-2. Open Grafana:
+2. Buka Grafana:
    ```
    http://localhost:3000
    ```
 
-3. Login dengan credentials:
+3. Login dengan kredensial:
    - Username: `admin`
    - Password: `admin123`
 
-4. Dashboards akan otomatis tersedia di:
+4. Dashboard akan otomatis tersedia di:
    - Home → Dashboards → CloudLab Overview
    - Home → Dashboards → CloudLab - Node.js Application
    - Home → Dashboards → CloudLab - Python API
 
-## Customization
+## Kustomisasi
 
-Untuk menambah atau memodifikasi dashboards:
+Untuk menambah atau memodifikasi dashboard:
 
-1. Edit JSON files di `monitoring/grafana/dashboards/`
+1. Edit file JSON di `monitoring/grafana/dashboards/`
 2. Atau buat dashboard baru via Grafana UI
-3. Export dashboard sebagai JSON
-4. Save ke `monitoring/grafana/dashboards/`
+3. Ekspor dashboard sebagai JSON
+4. Simpan ke `monitoring/grafana/dashboards/`
 5. Restart Grafana: `docker-compose restart grafana`
 
-## Troubleshooting
+## Pemecahan Masalah (Troubleshooting)
 
 ### Dashboard tidak muncul
-- Check Grafana logs: `docker-compose logs grafana`
-- Verify provisioning config: `monitoring/grafana/dashboards.yml`
-- Ensure JSON files valid
+- Cek logs Grafana: `docker-compose logs grafana`
+- Verifikasi konfigurasi provisioning: `monitoring/grafana/dashboards.yml`
+- Pastikan file JSON valid
 
-### No data in panels
-- Check Prometheus targets: http://localhost:9090/targets
-- Verify applications expose `/metrics` endpoint
-- Check Prometheus datasource connection in Grafana
+### Tidak ada data di panel
+- Cek target Prometheus: http://localhost:9090/targets
+- Verifikasi aplikasi mengekspos endpoint `/metrics`
+- Cek koneksi datasource Prometheus di Grafana
 
 ### Metrics tidak sesuai
-- Verify metric names di Prometheus: http://localhost:9090/graph
-- Check PromQL queries di dashboard panels
-- Ensure label selectors match your services
+- Verifikasi nama metric di Prometheus: http://localhost:9090/graph
+- Cek query PromQL di panel dashboard
+- Pastikan label selector cocok dengan layanan Anda
