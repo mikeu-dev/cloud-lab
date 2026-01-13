@@ -12,6 +12,8 @@ REQUEST_COUNT = Counter(
     ['method', 'endpoint', 'status_code']
 )
 
+REQUEST_DURATION = Histogram(
+    'http_request_duration_seconds',
     'HTTP request duration in seconds',
     ['method', 'endpoint']
 )
