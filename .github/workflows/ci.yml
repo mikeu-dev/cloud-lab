@@ -25,7 +25,13 @@ jobs:
 
       - name: Validate Nginx config
         run: |
-          docker run --rm -v $(pwd)/nginx/nginx.conf:/etc/nginx/nginx.conf:ro nginx:alpine nginx -t
+          docker run --rm \
+            --add-host nodejs-app:127.0.0.1 \
+            --add-host python-app:127.0.0.1 \
+            --add-host grafana:127.0.0.1 \
+            --add-host prometheus:127.0.0.1 \
+            -v $(pwd)/nginx/nginx.conf:/etc/nginx/nginx.conf:ro \
+            nginx:alpine nginx -t
 
   # Build all applications using matrix strategy
   build-apps:
