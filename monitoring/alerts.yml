@@ -41,3 +41,22 @@ groups:
         annotations:
           summary: "High error rate on {{ $labels.job }}"
           description: "{{ $labels.job }} has more than 5% error rate for 5 minutes."
+
+      # -- Business Alerts --
+      - alert: HighDBLatency
+        expr: rate(db_query_duration_seconds_sum[1m]) / rate(db_query_duration_seconds_count[1m]) > 0.5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow Database Queries"
+          description: "Average DB query duration is > 500ms"
+
+      - alert: LowStockWarning
+        expr: inventory_stock_count < 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low Stock for Product {{ $labels.product_id }}"
+          description: "Inventory count is below 5 items!"

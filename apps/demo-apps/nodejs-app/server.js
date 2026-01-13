@@ -28,6 +28,37 @@ const httpRequestTotal = new promClient.Counter({
     registers: [register]
 });
 
+// -- Business Metrics --
+const activeSessions = new promClient.Gauge({
+    name: 'active_sessions_total',
+    help: 'Number of active user sessions',
+    registers: [register]
+});
+
+const dbQueryDuration = new promClient.Histogram({
+    name: 'db_query_duration_seconds',
+    help: 'Duration of database queries in seconds',
+    buckets: [0.1, 0.3, 0.5, 1, 3, 5],
+    registers: [register]
+});
+
+// Simulate metric changes
+setInterval(() => {
+    // Randomly change active sessions
+    const fluctuation = Math.floor(Math.random() * 5) - 2; // -2 to +2
+    let current = (global.currentSessions || 100) + fluctuation;
+    if (current < 0) current = 0;
+    global.currentSessions = current;
+    activeSessions.set(current);
+
+    // Simulate occasional slow DB query
+    if (Math.random() > 0.8) {
+        dbQueryDuration.observe(Math.random() * 0.8); // Fast to medium
+    } else if (Math.random() > 0.95) {
+        dbQueryDuration.observe(0.5 + Math.random() * 1.5); // SLOW!
+    }
+}, 5000);
+
 // Middleware to track metrics
 app.use((req, res, next) => {
     const start = Date.now();

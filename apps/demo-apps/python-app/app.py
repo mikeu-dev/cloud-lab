@@ -12,11 +12,48 @@ REQUEST_COUNT = Counter(
     ['method', 'endpoint', 'status_code']
 )
 
-REQUEST_DURATION = Histogram(
-    'http_request_duration_seconds',
     'HTTP request duration in seconds',
     ['method', 'endpoint']
 )
+
+# -- Business Metrics --
+from prometheus_client import Gauge
+import random
+import threading
+
+INVENTORY_STOCK = Gauge(
+    'inventory_stock_count',
+    'Current stock level of product',
+    ['product_id']
+)
+
+CHECKOUT_TIME = Histogram(
+    'checkout_processing_seconds',
+    'Time taken to process checkout',
+    buckets=(0.1, 0.5, 1.0, 2.0, 5.0)
+)
+
+# Background simulation
+def simulate_metrics():
+    # Init stocks
+    stocks = {1: 50, 2: 200, 3: 15, 4: 5}
+    while True:
+        time.sleep(5)
+        # Update stock
+        for pid, count in stocks.items():
+            # Randomly decrease stock, restock if low
+            change = random.randint(-2, 1)
+            stocks[pid] = max(0, stocks[pid] + change)
+            if stocks[pid] < 5:
+                 if random.random() > 0.8: stocks[pid] += 20 # Restock
+            
+            INVENTORY_STOCK.labels(product_id=pid).set(stocks[pid])
+        
+        # Simulate checkout latency
+        if random.random() > 0.7:
+             CHECKOUT_TIME.observe(random.uniform(0.1, 1.5))
+
+threading.Thread(target=simulate_metrics, daemon=True).start()
 
 # Middleware to track metrics
 @app.before_request
